@@ -1,12 +1,8 @@
 use lazy_static::lazy_static;
 use rand::random;
 use rayon::prelude::*;
-use std::io::Write;
 use std::ops::{Add, Mul, Not, Rem};
-<<<<<<< HEAD
-use rayon::prelude::*;
-=======
->>>>>>> 7f7720b0ffe817006c372875a9c43f8190c6a76c
+use std::fs::File;
 
 #[derive(Debug, Clone, Copy)]
 struct Vec3 {
@@ -297,15 +293,11 @@ fn main() {
         goal.x * left.y - goal.y * left.x,
     );
 
-    let filename = String::from("output-rust.ppm");
+    let filename = String::from("output-rust.png");
     println!(
         "Width: = {}, Height: = {}, Samples = {}",
         w, h, samples_count
     );
-    println!("Writing data to {}", filename);
-
-    let mut file = std::fs::File::create(filename).unwrap();
-    write!(file, "P6 {} {} 255 ", w, h).unwrap();
 
     // first we create a range iterator over y-coordinates
     let bytes: Vec<u8> = (0..h as u32)
@@ -355,5 +347,13 @@ fn main() {
         })
         .collect();
 
-    file.write_all(&bytes).unwrap();
+    use png::HasParameters;
+
+    println!("Writing data to {}", filename);
+    let file = File::create(filename).expect("Failed to create output file");
+    let mut encoder = png::Encoder::new(file, w as u32, h as u32);
+    encoder.set(png::ColorType::RGB)
+        .set(png::BitDepth::Eight);
+    let mut writer = encoder.write_header().expect("Failed to write output file header");
+    writer.write_image_data(&bytes).expect("Failed to write image data");
 }
