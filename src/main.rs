@@ -279,9 +279,25 @@ fn trace(mut origin: Vec3, mut direction: Vec3) -> Vec3 {
 }
 
 fn main() {
-    let w = 960.0;
-    let h = 540.0;
-    let samples_count = 2;
+    use structopt::StructOpt;
+
+    #[derive(Debug, StructOpt)]
+    struct Options {
+        #[structopt(short, long, default_value = "960")]
+        pub width: u32,
+
+        #[structopt(short, long, default_value = "540")]
+        pub height: u32,
+
+        #[structopt(short, long, default_value = "2")]
+        pub sample_count: u32,
+    }
+
+    let options = Options::from_args();
+
+    let w = options.width as f32;
+    let h = options.height as f32;
+    let samples_count = options.sample_count;
 
     let position = Vec3::new_abc(-22.0, 5.0, 25.0);
     let goal = !(Vec3::new_abc(-3.0, 4.0, 0.0) + position * Vec3::from(-1.0));
