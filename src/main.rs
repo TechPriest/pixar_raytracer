@@ -317,6 +317,7 @@ fn main() {
     );
 
     let mut bytes = vec![0u8; h as usize * w as usize * BYTES_PER_PIXEL];
+    let start = std::time::Instant::now();
     bytes
         .par_chunks_mut(BYTES_PER_PIXEL)
         .into_par_iter()
@@ -349,6 +350,8 @@ fn main() {
             chunk[1] = color.y as u8;
             chunk[2] = color.z as u8;
         });
+    let end = std::time::Instant::now();
+    println!("Image generated in {:0.5}sec.", (end - start).as_secs());
 
     use png::HasParameters;
 
